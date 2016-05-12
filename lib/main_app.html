@@ -1,0 +1,34 @@
+<!--
+  Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
+  is governed by a BSD-style license that can be found in the LICENSE file.
+-->
+<link rel="import" href="packages/polymer_elements/paper_item.html">
+<link rel=”import” href=”packages/polymer_elements/paper_toolbar/paper_toolbar.html”>
+<dom-module id="main-app">
+    <style>
+        :host {
+            display: block;
+        }
+
+        .container {
+          @apply(--layout-vertical);
+        }
+        .flexchild {
+          @apply(--layout-flex);
+        }
+
+    </style>
+
+
+
+    <template>
+        <div class="container">
+            <div>
+                <paper-input label="Setup time...(second)" auto-validate pattern="[0-9]*" maxlength="3" value="{{text}}">
+                </paper-input>
+                <paper-button id="exec" raised on-tap="execute">{{execLabel}}</paper-button>
+            </div>
+            <div class="flexchild">left time : {{timeLeft}}</div>
+        </div>
+    </template>
+</dom-module>
