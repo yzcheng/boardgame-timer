@@ -2,33 +2,62 @@
   Copyright (c) 2016, <your name>. All rights reserved. Use of this source code
   is governed by a BSD-style license that can be found in the LICENSE file.
 -->
-<link rel="import" href="packages/polymer_elements/paper_item.html">
-<link rel=”import” href=”packages/polymer_elements/paper_toolbar/paper_toolbar.html”>
 <dom-module id="main-app">
-    <style>
-        :host {
-            display: block;
-        }
-
-        .container {
-          @apply(--layout-vertical);
-        }
-        .flexchild {
-          @apply(--layout-flex);
-        }
-
-    </style>
-
-
-
     <template>
-        <div class="container">
-            <div>
-                <paper-input label="Setup time...(second)" auto-validate pattern="[0-9]*" maxlength="3" value="{{text}}">
+        <style is="custom-style">
+            .flex-center-justified {
+                @apply(--layout-vertical);
+                @apply(--layout-center-justified);
+            }
+
+            .flex {
+                @apply(--layout-horizontal);
+                @apply(--layout-center-justified);
+            }
+
+            .big {
+                font-size: 15em;
+                border: 1px solid #65adc3;
+            }
+
+            .small {
+                font-size: 7em;
+                border: 1px solid #65adc3;
+            }
+
+            paper-button.red {
+              color: var(--paper-red-400);
+            }
+
+            iron-icon {
+                --iron-icon-height: 64px;
+                --iron-icon-width: 64px;
+            }
+        </style>
+        <iron-media-query query="(min-width: 800px)" query-matches="{{queryMatches}}"></iron-media-query>
+        <paper-toolbar>
+            <span class="title">Boardgame Timer</span>
+        </paper-toolbar>
+        <div class="container flex-center-justified">
+            <div class="container flex">
+                <paper-input label="Setup time...(second)" auto-validate pattern="[0-9]*" maxlength="3" value="{{eachRoundTimeSecLabel}}">
                 </paper-input>
-                <paper-button id="exec" raised on-tap="execute">{{execLabel}}</paper-button>
+                <paper-button id="btnAlarmStart" raised>
+                    <iron-icon icon="alarm"></iron-icon>
+                    START
+                </paper-button>
+                <paper-button id="btnAlarmStop" raised class="red" hidden="true">
+                    <iron-icon icon="alarm"></iron-icon>
+                    STOP
+                </paper-button>
             </div>
-            <div class="flexchild">left time : {{timeLeft}}</div>
+            Round : {{currentRound}}, Player : {{playerName}}
+            <template is="dom-if" if="{{queryMatches}}">
+                <div class="flexchild-vertical big">{{timeLeftLabel}}</div>
+            </template>
+            <template is="dom-if" if="{{!queryMatches}}">
+                <div class="flexchild-vertical small">{{timeLeftLabel}}</div>
+            </template>
         </div>
     </template>
 </dom-module>
