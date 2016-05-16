@@ -3,6 +3,7 @@
 @HtmlImport('main_app.html')
 library boardgame_timer.lib.main_app;
 
+import 'dart:js';
 import 'dart:html';
 import 'dart:async';
 import 'dart:math';
@@ -21,6 +22,7 @@ import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
+import 'package:polymer_elements/paper_ripple.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
 import 'package:polymer/polymer.dart';
@@ -68,7 +70,7 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
 
   @observable
   @property
-  String playerColor = "79398a";
+  String playerColor = "#cccccc";
 
   //UI 顯示的文字-END
 
@@ -105,9 +107,13 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
     this._switchNextPlayer();
   }
 
+  @Listen('id_list.track')
+  void IdListTrackHandler(e, detail) {
+    print('Tracking in progress... ${detail['x']}, ${detail['y']}');
+  }
+
   @Listen('btnMenu.tap')
   void btnMenuTapHandler(event, [_]) {
-    print('tapped menu');
     (querySelector("#menuDialog") as PaperDialog).toggle();
   }
 
@@ -129,6 +135,13 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
   void _initGame() {
     this.game = new Game();
     this.game.players = this._cfg.players;
+    List<Object> _players = [];
+
+    for (var i = 0; i < this.game.players.length; i++) {
+      Player _p = this.game.players[i];
+      _players.add({"id": _p.id, "name": _p.name, "color": _p.color});
+    }
+    this.players = _players;
     // this.players = JSON.decode(JSON.encode(this._cfg.players));
     // print(this.players);
   }
@@ -190,6 +203,13 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
     //UI display
     this.playerName = this.currentPlayer.name;
     this.playerColor = this.currentPlayer.color;
+    //update style
+    customStyle["--my-theme-background"] = "linear-gradient(90deg, " +
+        this.playerColor +
+        ", #ffffff, " +
+        this.playerColor +
+        ")";
+    Polymer.updateStyles();
     this.elapsedTimeMS = this.game.elapsedTimeMS;
 
     ++playerIndex;

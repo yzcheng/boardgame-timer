@@ -5,6 +5,13 @@
 <dom-module id="main-app">
     <template>
         <style is="custom-style">
+            :host {
+                display: block;
+                height: 100%;
+                --my-theme-background: linear-gradient(90deg, #cccccc, #ffffff, #cccccc);
+                background: var(--my-theme-background);
+            }
+
             .flex-center-vertical {
                 @apply(--layout-vertical);
                 @apply(--layout-center);
@@ -17,19 +24,27 @@
 
             .big {
                 font-size: 15em;
-                border: 1px solid #65adc3;
+                #border: 1px solid #65adc3;
                 height: 100%;
             }
 
             .small {
                 font-size: 7em;
-                border: 1px solid #65adc3;
+                #border: 1px solid #65adc3;
                 height: 100%;
             }
 
             paper-button.red {
                 color: var(--paper-red-400);
             }
+
+            .colorbox {
+              height : 16px;
+              width : 16px;
+              border: 1px solid #65adc3;
+              margin : 5px
+            }
+
         </style>
         <iron-media-query query="(min-width: 800px)" query-matches="{{queryMatches}}"></iron-media-query>
         <paper-toolbar>
@@ -55,21 +70,27 @@
             <div>
                 Round : {{round}} Player{{playerIndex}} - {{playerName}}
             </div>
-            <template is="dom-if" if="{{queryMatches}}">
-                <div class="container flex-center-horizontal big" style="background-color:#{{playerColor}}">{{timeLeftLabel}}</div>
-            </template>
-            <template is="dom-if" if="{{!queryMatches}}">
-                <div class="container flex-center-horizontal small" style="background-color:#{{playerColor}}">{{timeLeftLabel}}</div>
-            </template>
+            <div>
+                <template is="dom-if" if="{{queryMatches}}">
+                    <div class="container flex-center-horizontal big">{{timeLeftLabel}}</div>
+                </template>
+                <template is="dom-if" if="{{!queryMatches}}">
+                    <div class="container flex-center-horizontal small">{{timeLeftLabel}}</div>
+                </template>
+            </div>
         </div>
         <paper-dialog id="menuDialog" modal="true">
             <h2>Config</h2>
             <paper-dialog-scrollable>
-              <iron-list id="id_list" items="{{players}}" selection-enabled>
-                <template>
-                    <paper-item> {{item.name}} </paper-item>
-                </template>
-              </iron-list>
+                <iron-list id="id_list" items="{{players}}" selection-enabled>
+                    <template>
+                      <paper-item type="menu_player" id="{{item.id}}">
+                        <div class="colorbox" style="background : {{item.color}};">
+                        </div>
+                        {{item.name}}
+                      </paper-item>
+                    </template>
+                </iron-list>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button dialog-dismiss>
