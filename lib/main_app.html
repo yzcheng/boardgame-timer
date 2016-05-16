@@ -80,18 +80,36 @@
             </div>
         </div>
         <paper-dialog id="menuDialog" modal="true">
-            <h2>Config</h2>
+            <h2>Configuration</h2>
+            <div>
+              <paper-icon-button id="menu_add_player" icon="add" title="add player"></paper-icon-button>
+              <paper-icon-button id="menu_del_player" icon="delete" disabled title="delete player"></paper-icon-button>
+              <paper-icon-button id="menu_reorder" icon="sort" title="reorder"></paper-icon-button>
+            </div>
             <paper-dialog-scrollable>
-                <iron-list id="id_list" items="{{players}}" selection-enabled>
-                    <template>
-                      <paper-item type="menu_player" id="{{item.id}}">
-                        <div class="colorbox" style="background : {{item.color}};">
-                        </div>
-                        {{item.name}}
-                      </paper-item>
-                    </template>
-                </iron-list>
+                <paper-listbox id="menu_player_list">
+                  <template is="dom-repeat" items="{{players}}">
+                    <paper-item id="{{item.id}}">
+                      <div class="colorbox" style="background : {{item.color}};">
+                      </div>
+                      {{item.name}}
+                    </paper-item>
+                  </template>
+                </paper-listbox>
             </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>
+                    <iron-icon icon="close"></iron-icon>Cancel</paper-button>
+                <paper-button dialog-confirm>
+                    <iron-icon icon="done"></iron-icon>Accept</paper-button>
+            </div>
+        </paper-dialog>
+        <paper-dialog id="menuAddPlayerDialog" modal="true">
+            <h2>Configuration\Add Player</h2>
+            <form is="iron-form" id="form" method="post" action="/form/handler">
+              <paper-input name="name" label="name"></paper-input>
+              <input name="address">
+            </form>
             <div class="buttons">
                 <paper-button dialog-dismiss>
                     <iron-icon icon="close"></iron-icon>Cancel</paper-button>

@@ -25,6 +25,7 @@ import 'package:polymer_elements/paper_button.dart';
 import 'package:polymer_elements/paper_ripple.dart';
 import 'package:polymer_elements/paper_icon_button.dart';
 import 'package:polymer_elements/paper_toolbar.dart';
+import 'package:polymer_elements/paper_listbox.dart';
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 import "package:observe/observe.dart";
@@ -107,9 +108,15 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
     this._switchNextPlayer();
   }
 
-  @Listen('id_list.track')
-  void IdListTrackHandler(e, detail) {
-    print('Tracking in progress... ${detail['x']}, ${detail['y']}');
+  @Listen('menu_player_list.iron-select')
+  void menuPlayerListIronSelectHandler(event, [_]) {
+    (querySelector("#menu_del_player") as PaperIconButton).disabled = false;
+  }
+
+  @Listen('menu_add_player.click')
+  void menuAddClickHandler(event, [_]) {
+    (querySelector("#menuDialog") as PaperDialog).close();
+    (querySelector("#menuAddPlayerDialog") as PaperDialog).toggle();
   }
 
   @Listen('btnMenu.tap')
