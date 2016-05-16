@@ -15,7 +15,6 @@ dependencies:
   autonotify_observe : ^1.0.0+7
   intl: ^0.12.7+1
   uuid: ^0.5.2
-  color: ^2.0.0
 
 transformers:
 - autonotify_observe

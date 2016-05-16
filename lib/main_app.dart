@@ -189,7 +189,7 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
     this.currentPlayer = this.game.players[playerIndex];
     //UI display
     this.playerName = this.currentPlayer.name;
-    this.playerColor = this.currentPlayer.color.toString();
+    this.playerColor = this.currentPlayer.color;
     this.elapsedTimeMS = this.game.elapsedTimeMS;
 
     ++playerIndex;
