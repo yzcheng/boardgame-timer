@@ -6,13 +6,18 @@ library boardgame_timer.lib.main_app;
 import 'dart:html';
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 import 'package:boardgame_timer/config/config.dart';
 import 'package:boardgame_timer/sound/sound_player.dart';
 import 'package:boardgame_timer/vo/player.dart';
+import 'package:boardgame_timer/vo/game.dart';
 import 'package:intl/intl.dart';
 import 'package:polymer_elements/iron_media_query.dart';
 import 'package:polymer_elements/iron_icons.dart';
+import 'package:polymer_elements/iron_list.dart';
 import 'package:polymer_elements/iron_flex_layout/classes/iron_flex_layout.dart';
+import 'package:polymer_elements/paper_item.dart';
+import 'package:polymer_elements/paper_dialog.dart';
 import 'package:polymer_elements/paper_material.dart';
 import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
@@ -29,19 +34,43 @@ import "package:polymer_autonotify/polymer_autonotify.dart"
 class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
   Config _cfg = new Config();
 
+  //需研究, Polymer View尚無法綁定Player內的屬性.(ex:game.elapsedTimeMS)
+  @observable
+  @property
+  Game game;
+
+  @observable
+  @property
+  List<Object> players;
+
+  //需研究, Polymer View尚無法綁定Player內的屬性.(ex:currentPlayer.name)
   @observable
   @property
   Player currentPlayer;
 
+  //UI 顯示的文字-START
+  //等待解法
   @observable
   @property
-  int currentRound = 0;
+  int round = 0;
 
-  List<Player> _roundEndList = new List<Player>();
+  @observable
+  @property
+  int playerIndex = 0;
 
   @observable
   @property
   String playerName;
+
+  @observable
+  @property
+  int elapsedTimeMS = 0;
+
+  @observable
+  @property
+  String playerColor = "79398a";
+
+  //UI 顯示的文字-END
 
   SoundPlayer sp = new SoundPlayer();
   Timer _countdownTimer;
@@ -67,31 +96,48 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
 
   NumberFormat nf = new NumberFormat("###.000");
 
-  static final Duration WARNING_INTERVAL = const Duration(milliseconds: 1000);
-  static final Duration COUNTDOWN_INTERVAL = const Duration(milliseconds: 167);
+  static final Duration WARNING_INTERVAL = const Duration(milliseconds: 800);
+  static final Duration COUNTDOWN_INTERVAL = const Duration(milliseconds: 88);
 
   /// Constructor used to create instance of MainApp.
   MainApp.created() : super.created() {
-    this.currentPlayer = this._cfg.players[0];
-    this.playerName = this.currentPlayer.name;
+    this._initGame();
+    this._switchNextPlayer();
+  }
+
+  @Listen('btnMenu.tap')
+  void btnMenuTapHandler(event, [_]) {
+    print('tapped menu');
+    (querySelector("#menuDialog") as PaperDialog).toggle();
   }
 
   @Listen('btnAlarmStart.tap')
   void btnAlarmStartTapHandler(event, [_]) {
+    this._initGame();
+    this.game.start();
     this._showMainBtnStage(false, true);
     this._startCountdown();
   }
 
   @Listen('btnAlarmStop.tap')
   void btnAlarmStopTapHandler(event, [_]) {
+    this.game.stop();
     this._showMainBtnStage(true, false);
     this._stopCountdown();
   }
 
+  void _initGame() {
+    this.game = new Game();
+    this.game.players = this._cfg.players;
+    // this.players = JSON.decode(JSON.encode(this._cfg.players));
+    // print(this.players);
+  }
+
   void _startCountdown() {
     print("startCountdown...");
-    this.timeLeftLabel = this.eachRoundTimeSecLabel;
     this._eachRoundTimeMS = int.parse(this.eachRoundTimeSecLabel) * 1000;
+    this.timeLeftLabel = nf.format(this._eachRoundTimeMS / 1000);
+    //this.timeLeftLabel = this.eachRoundTimeSecLabel;
     this._dateTime = new DateTime.now();
     this._countdownTimer = new Timer.periodic(COUNTDOWN_INTERVAL, countdown);
     this._warningTimer = new Timer.periodic(WARNING_INTERVAL, warningHandler);
@@ -131,21 +177,22 @@ class MainApp extends PolymerElement with AutonotifyBehavior, Observable {
     }
   }
 
-  void _switchNextPlayer2() {}
-
   //切換至下一位玩家
   void _switchNextPlayer() {
-    if (this.currentPlayer == null) {
-      this.currentPlayer = this._cfg.players.removeAt(0);
-    } else if (this._cfg.players.length == this._roundEndList.length) {
-      //1 round complete
-      this._cfg.players.addAll(this._roundEndList);
-      this.currentPlayer = this._cfg.players.removeAt(0);
-      ++currentRound;
-    } else {
-      this._roundEndList.add(this.currentPlayer);
+    //if 1 round complete
+    if (this.game.players.length == (playerIndex)) {
+      ++round;
+      this.playerIndex = 0;
     }
+
+    //print("player index:" + playerIndex.toString());
+    this.currentPlayer = this.game.players[playerIndex];
+    //UI display
     this.playerName = this.currentPlayer.name;
+    this.playerColor = this.currentPlayer.color.toString();
+    this.elapsedTimeMS = this.game.elapsedTimeMS;
+
+    ++playerIndex;
   }
 
   // Optional lifecycle methods - uncomment if needed.

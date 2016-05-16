@@ -5,59 +5,78 @@
 <dom-module id="main-app">
     <template>
         <style is="custom-style">
-            .flex-center-justified {
+            .flex-center-vertical {
                 @apply(--layout-vertical);
-                @apply(--layout-center-justified);
+                @apply(--layout-center);
             }
 
-            .flex {
+            .flex-center-horizontal {
                 @apply(--layout-horizontal);
-                @apply(--layout-center-justified);
+                @apply(--layout-center);
             }
 
             .big {
                 font-size: 15em;
                 border: 1px solid #65adc3;
+                height: 100%;
             }
 
             .small {
                 font-size: 7em;
                 border: 1px solid #65adc3;
+                height: 100%;
             }
 
             paper-button.red {
-              color: var(--paper-red-400);
-            }
-
-            iron-icon {
-                --iron-icon-height: 64px;
-                --iron-icon-width: 64px;
+                color: var(--paper-red-400);
             }
         </style>
         <iron-media-query query="(min-width: 800px)" query-matches="{{queryMatches}}"></iron-media-query>
         <paper-toolbar>
+            <paper-icon-button id="btnMenu" icon="menu"></paper-icon-button>
             <span class="title">Boardgame Timer</span>
         </paper-toolbar>
-        <div class="container flex-center-justified">
-            <div class="container flex">
+        <div class="container flex-center-vertical">
+            <div class="container flex-center-horizontal">
                 <paper-input label="Setup time...(second)" auto-validate pattern="[0-9]*" maxlength="3" value="{{eachRoundTimeSecLabel}}">
                 </paper-input>
-                <paper-button id="btnAlarmStart" raised>
+                <paper-button id="btnAlarmStart">
                     <iron-icon icon="alarm"></iron-icon>
                     START
                 </paper-button>
-                <paper-button id="btnAlarmStop" raised class="red" hidden="true">
+                <paper-button id="btnAlarmStop" class="red" hidden="true">
                     <iron-icon icon="alarm"></iron-icon>
                     STOP
                 </paper-button>
             </div>
-            Round : {{currentRound}}, Player : {{playerName}}
+            <div>
+                Elapsed Time : {{elapsedTimeMS}}
+            </div>
+            <div>
+                Round : {{round}} Player{{playerIndex}} - {{playerName}}
+            </div>
             <template is="dom-if" if="{{queryMatches}}">
-                <div class="flexchild-vertical big">{{timeLeftLabel}}</div>
+                <div class="container flex-center-horizontal big" style="background-color:#{{playerColor}}">{{timeLeftLabel}}</div>
             </template>
             <template is="dom-if" if="{{!queryMatches}}">
-                <div class="flexchild-vertical small">{{timeLeftLabel}}</div>
+                <div class="container flex-center-horizontal small" style="background-color:#{{playerColor}}">{{timeLeftLabel}}</div>
             </template>
         </div>
+        <paper-dialog id="menuDialog" modal="true">
+            <h2>Config</h2>
+            <paper-dialog-scrollable>
+              <iron-list id="id_list" items="{{players}}" selection-enabled>
+                <template>
+                    <paper-item> {{item.name}} </paper-item>
+                </template>
+              </iron-list>
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>
+                    <iron-icon icon="close"></iron-icon>Cancel</paper-button>
+                <paper-button dialog-confirm>
+                    <iron-icon icon="done"></iron-icon>Accept</paper-button>
+            </div>
+        </paper-dialog>
     </template>
 </dom-module>

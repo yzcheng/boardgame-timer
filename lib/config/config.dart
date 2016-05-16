@@ -18,8 +18,8 @@ class Config {
     if (players.isEmpty) {
       //assign a default player
       String id = _uuid.v1().toString();
-      players.add(new Player(id, "Tester"));
-      players.add(new Player(_uuid.v1().toString(), "Tester2"));
+      players.add(new Player(id, "絕地武士"));
+      players.add(new Player(_uuid.v1().toString(), "小寶"));
     }
   }
 
